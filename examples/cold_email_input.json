@@ -1,3 +1,29 @@
 {
-  "example": "cold email input"
+  "epp_version": "1.0.0",
+  "quantum_state": "superposed",
+  "prompt_id": "cold_email_v1_001",
+  "metadata": {
+    "created": "2024-01-15T10:30:00Z",
+    "domain": "cold_email",
+    "tags": ["outreach", "b2b", "saas"]
+  },
+  "content": {
+    "title": "Quantum-Enhanced B2B Outreach: {value_proposition} meets {company_name}",
+    "body": "Hi {recipient_name},\n\nI noticed {company_name} is {personalization_element} and thought you might be interested in how {value_proposition} could create quantum entanglement between your current processes and exponential growth.\n\nOur solution exists in a superposition of possibilities until you observe the demo - at which point it collapses into the exact features your team needs most.\n\nWould you be open to a brief quantum consultation where we explore how uncertainty principle applies to your {business_challenge}?\n\nBest regards,\n{sender_name}",
+    "variables": {
+      "recipient_name": "{{RECIPIENT_NAME}}",
+      "company_name": "{{COMPANY_NAME}}", 
+      "value_proposition": "AI-powered workflow optimization",
+      "call_to_action": "Schedule a 15-minute quantum consultation",
+      "personalization_elements": [
+        "expanding their engineering team",
+        "focusing on operational efficiency", 
+        "launching new product features"
+      ]
+    },
+    "quantum_properties": {
+      "coherence": 0.85,
+      "entanglement_refs": ["landing_page_v1_001", "competitor_analysis_v1_001"]
+    }
+  }
 }

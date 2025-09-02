@@ -1,11 +1,13 @@
 """Evoprompt Protocol CLI - Quantum-level management, validation, and generation with EPP specs."""
-# Requirements: pip install colorama
+# Requirements: pip install colorama jsonschema
 import argparse
 import os
 import sys
 import json
 from colorama import Fore, Style, init
 from datetime import datetime
+import jsonschema
+from jsonschema import validate as json_validate, ValidationError, SchemaError
 sys.path.append(os.path.dirname(__file__))
 from quantum_prompts import generate_superposed_prompts, entangle_prompts, collapse_prompt
 
@@ -31,6 +33,41 @@ def discover_files(folder, ext):
                 found.append(os.path.join(root, f))
     return found
 
+# Utility: Load JSON schema by domain
+def load_schema_for_domain(domain):
+    """Load the appropriate JSON schema for a given domain."""
+    schema_map = {
+        "cold_email": "epp.cold_email",
+        "landing_page": "epp.landing_page", 
+        "competitor_analysis": "epp.competitor_analysis"
+    }
+    
+    if domain not in schema_map:
+        return None
+        
+    schema_name = schema_map[domain]
+    schema_path = os.path.join(
+        os.path.dirname(__file__), "..", "schemas", schema_name, "1.0.0.json"
+    )
+    
+    if not os.path.isfile(schema_path):
+        return None
+        
+    try:
+        with open(schema_path, 'r') as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        log(f"Error loading schema {schema_path}: {e}", "ERROR")
+        return None
+
+# Utility: Determine domain from JSON content
+def determine_domain_from_content(data):
+    """Determine the domain from JSON content."""
+    if isinstance(data, dict):
+        metadata = data.get("metadata", {})
+        return metadata.get("domain")
+    return None
+
 # Logging utility
 def log(msg, level="INFO"):
     print(f"{Fore.YELLOW}[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {level}: {Style.RESET_ALL}{msg}")
@@ -40,11 +77,64 @@ def validate(args, ctx=None):
     if not os.path.isfile(args.file):
         log(f"File not found: {args.file}", "ERROR")
         sys.exit(1)
+    
     log(f"Validating file: {args.file}")
-    result = {"file": args.file, "valid": True}
-    if ctx:
-        ctx.validation_result = result
-    print(Fore.GREEN + f"Validation result: {result}")
+    
+    # Load and parse the JSON file
+    try:
+        with open(args.file, 'r') as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        result = {"file": args.file, "valid": False, "error": f"Invalid JSON: {e}"}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.RED + f"Validation result: {result}")
+        return
+    except IOError as e:
+        result = {"file": args.file, "valid": False, "error": f"File error: {e}"}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.RED + f"Validation result: {result}")
+        return
+    
+    # Determine the domain for schema selection
+    domain = determine_domain_from_content(data)
+    if not domain:
+        result = {"file": args.file, "valid": False, "error": "Cannot determine domain from content. Missing metadata.domain field."}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.RED + f"Validation result: {result}")
+        return
+    
+    # Load the appropriate schema
+    schema = load_schema_for_domain(domain)
+    if not schema:
+        result = {"file": args.file, "valid": False, "error": f"No schema found for domain: {domain}"}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.RED + f"Validation result: {result}")
+        return
+    
+    # Perform JSON schema validation
+    try:
+        json_validate(instance=data, schema=schema)
+        result = {"file": args.file, "valid": True, "domain": domain}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.GREEN + f"Validation result: {result}")
+        log(f"✓ File {args.file} is valid according to {domain} schema", "INFO")
+    except ValidationError as e:
+        result = {"file": args.file, "valid": False, "error": f"Schema validation failed: {e.message}", "domain": domain}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.RED + f"Validation result: {result}")
+        log(f"✗ Validation error at path '{'.'.join(str(p) for p in e.path)}': {e.message}", "ERROR")
+    except SchemaError as e:
+        result = {"file": args.file, "valid": False, "error": f"Schema error: {e.message}", "domain": domain}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.RED + f"Validation result: {result}")
+        log(f"✗ Schema error: {e.message}", "ERROR")
 
 # Generation command
 def generate(args, ctx=None):

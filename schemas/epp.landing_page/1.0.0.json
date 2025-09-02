@@ -1,6 +1,98 @@
 {
-  "title": "Landing Page Schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Landing Page EPP Schema", 
+  "description": "Schema for quantum-entangled landing page prompts following EPP-0001 Core specification",
   "version": "1.0.0",
   "type": "object",
-  "properties": {}
+  "required": ["epp_version", "quantum_state", "prompt_id", "metadata", "content"],
+  "properties": {
+    "epp_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "EPP protocol version"
+    },
+    "quantum_state": {
+      "type": "string",
+      "enum": ["superposed", "entangled", "collapsed"],
+      "description": "Current quantum state of the prompt"
+    },
+    "prompt_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+$",
+      "minLength": 1,
+      "description": "Unique identifier for entanglement tracking"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["created", "domain"],
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp of creation"
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["cold_email", "landing_page", "competitor_analysis", "custom"],
+          "description": "Prompt domain classification"
+        },
+        "tags": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Optional tags for categorization"
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "required": ["title", "body"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Landing page headline or title"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Main landing page content with quantum superposition elements"
+        },
+        "variables": {
+          "type": "object",
+          "properties": {
+            "product_name": {"type": "string"},
+            "target_audience": {"type": "string"},
+            "value_proposition": {"type": "string"},
+            "features": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "call_to_action": {"type": "string"},
+            "social_proof": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          },
+          "description": "Variable placeholders for customization"
+        },
+        "quantum_properties": {
+          "type": "object",
+          "properties": {
+            "coherence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Quantum coherence level"
+            },
+            "entanglement_refs": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "References to entangled prompts"
+            }
+          }
+        }
+      }
+    }
+  }
 }

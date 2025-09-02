@@ -34,4 +34,3 @@ def collapse_prompt(prompts: List[Dict]) -> Dict:
     """Collapse superposed prompts to a single prompt (measurement)."""
     return random.choice(prompts)
 
-

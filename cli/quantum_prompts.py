@@ -34,10 +34,4 @@ def collapse_prompt(prompts: List[Dict]) -> Dict:
     """Collapse superposed prompts to a single prompt (measurement)."""
     return random.choice(prompts)
 
-if __name__ == "__main__":
-    superposed = generate_superposed_prompts()
-    print("Superposed Prompts:", json.dumps(superposed, indent=2))
-    entangled = entangle_prompts(superposed)
-    print("Entangled Prompt:", json.dumps(entangled, indent=2))
-    collapsed = collapse_prompt(superposed)
-    print("Collapsed Prompt:", json.dumps(collapsed, indent=2))
+

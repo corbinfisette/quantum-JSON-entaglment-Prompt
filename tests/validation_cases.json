@@ -1,3 +1,89 @@
 {
-  "test_cases": []
+  "test_cases": [
+    {
+      "name": "valid_cold_email_superposed",
+      "description": "Valid cold email prompt in superposed state",
+      "input": {
+        "epp_version": "1.0.0",
+        "quantum_state": "superposed",
+        "prompt_id": "test_email_001",
+        "metadata": {
+          "created": "2024-01-15T10:00:00Z",
+          "domain": "cold_email"
+        },
+        "content": {
+          "title": "Test Email Subject",
+          "body": "Test email body content"
+        }
+      },
+      "expected_result": "valid"
+    },
+    {
+      "name": "invalid_missing_required_fields",
+      "description": "Invalid prompt missing required fields",
+      "input": {
+        "epp_version": "1.0.0",
+        "quantum_state": "superposed"
+      },
+      "expected_result": "invalid"
+    },
+    {
+      "name": "invalid_quantum_state",
+      "description": "Invalid quantum state value",
+      "input": {
+        "epp_version": "1.0.0",
+        "quantum_state": "invalid_state",
+        "prompt_id": "test_001",
+        "metadata": {
+          "created": "2024-01-15T10:00:00Z",
+          "domain": "cold_email"
+        },
+        "content": {
+          "title": "Test",
+          "body": "Test"
+        }
+      },
+      "expected_result": "invalid"
+    },
+    {
+      "name": "valid_landing_page_entangled",
+      "description": "Valid landing page prompt in entangled state",
+      "input": {
+        "epp_version": "1.0.0",
+        "quantum_state": "entangled",
+        "prompt_id": "test_landing_001",
+        "metadata": {
+          "created": "2024-01-15T10:00:00Z",
+          "domain": "landing_page"
+        },
+        "content": {
+          "title": "Test Landing Page",
+          "body": "Landing page content",
+          "quantum_properties": {
+            "coherence": 0.85,
+            "entanglement_refs": ["test_email_001"]
+          }
+        }
+      },
+      "expected_result": "valid"
+    },
+    {
+      "name": "valid_competitor_analysis_collapsed",
+      "description": "Valid competitor analysis prompt in collapsed state", 
+      "input": {
+        "epp_version": "1.0.0",
+        "quantum_state": "collapsed",
+        "prompt_id": "test_analysis_001",
+        "metadata": {
+          "created": "2024-01-15T10:00:00Z",
+          "domain": "competitor_analysis"
+        },
+        "content": {
+          "title": "Competitor Analysis Test",
+          "body": "Analysis content with quantum insights"
+        }
+      },
+      "expected_result": "valid"
+    }
+  ]
 }

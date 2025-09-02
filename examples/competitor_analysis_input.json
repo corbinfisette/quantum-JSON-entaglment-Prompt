@@ -1,3 +1,36 @@
 {
-  "example": "competitor analysis input"
+  "epp_version": "1.0.0",
+  "quantum_state": "collapsed",
+  "prompt_id": "competitor_analysis_v1_001",
+  "metadata": {
+    "created": "2024-01-15T10:40:00Z", 
+    "domain": "competitor_analysis",
+    "tags": ["competitive-intelligence", "market-research", "strategy"]
+  },
+  "content": {
+    "title": "Quantum Competitive Analysis: {target_competitor} vs Market Superposition",
+    "body": "Analyzing {target_competitor} through the lens of quantum competitive dynamics:\n\n🔍 Analysis Dimensions:\n{analysis_dimensions}\n\nMarket Position: {target_competitor} currently exists in a {market_segment} superposition, simultaneously competing across multiple vectors until customer choice collapses their position.\n\nKey Observations:\n• Their {strategic_focus} creates entanglement with our core offerings\n• Measurement effects: Direct competitive moves cause immediate market reactions\n• Uncertainty principle: Their precision in {comparison_metrics} inversely affects their adaptability\n\nQuantum Competitive Recommendations:\n1. Exploit their coherence gaps in {analysis_dimension_1}\n2. Create entanglement opportunities in {analysis_dimension_2} \n3. Use uncertainty principle to maintain strategic flexibility\n4. Monitor for decoherence in their {time_horizon} strategy\n\nNext quantum measurement scheduled for competitive position assessment.",
+    "variables": {
+      "target_competitor": "CompetitorX Pro",
+      "analysis_dimensions": [
+        "• Feature parity and differentiation vectors",
+        "• Pricing strategy quantum states", 
+        "• Market positioning superposition",
+        "• Customer acquisition entanglement patterns"
+      ],
+      "market_segment": "B2B productivity tools",
+      "comparison_metrics": [
+        "feature completeness",
+        "pricing transparency", 
+        "customer satisfaction",
+        "market share growth"
+      ],
+      "strategic_focus": "enterprise integration capabilities",
+      "time_horizon": "12-month product roadmap"
+    },
+    "quantum_properties": {
+      "coherence": 0.78,
+      "entanglement_refs": ["cold_email_v1_001", "landing_page_v1_001"]
+    }
+  }
 }

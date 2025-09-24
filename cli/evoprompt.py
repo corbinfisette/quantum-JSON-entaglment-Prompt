@@ -160,25 +160,24 @@ def entangle(args):
     generate(args, ctx)
     print(Fore.MAGENTA + f"Entangled results:\nValidation: {ctx.validation_result}\nGeneration: {ctx.generated_output}")
 
+# Utility: List files in a directory with consistent formatting
+def list_files_in_directory(folder_name, display_name, color):
+    """Generic function to list files in a directory with consistent formatting."""
+    files = discover_files(os.path.join(os.path.dirname(__file__), "..", folder_name), ".json")
+    if files:
+        print(color + f"Available {display_name}:")
+        for f in files:
+            print("  " + os.path.relpath(f, os.path.dirname(__file__)))
+    else:
+        print(Fore.RED + f"No {display_name.lower()} found.")
+
 # List schemas command
 def list_schemas(args):
-    schemas = discover_files(os.path.join(os.path.dirname(__file__), "..", "schemas"), ".json")
-    if schemas:
-        print(Fore.GREEN + "Available Schemas:")
-        for s in schemas:
-            print("  " + os.path.relpath(s, os.path.dirname(__file__)))
-    else:
-        print(Fore.RED + "No schemas found.")
+    list_files_in_directory("schemas", "Schemas", Fore.GREEN)
 
 # List examples command
 def list_examples(args):
-    examples = discover_files(os.path.join(os.path.dirname(__file__), "..", "examples"), ".json")
-    if examples:
-        print(Fore.CYAN + "Available Examples:")
-        for e in examples:
-            print("  " + os.path.relpath(e, os.path.dirname(__file__)))
-    else:
-        print(Fore.RED + "No examples found.")
+    list_files_in_directory("examples", "Examples", Fore.CYAN)
 
 # Plugin stub
 def plugin(args):

@@ -23,6 +23,22 @@ pip install colorama  # Required dependency
 
 ### CLI Usage
 
+#### 🌟 Guided Interactive Mode (New!)
+
+For the best user experience, simply run the CLI without arguments to launch the interactive guided mode:
+
+```bash
+python cli/evoprompt.py
+```
+
+This will present you with a user-friendly menu to guide you through:
+- 🔮 Generating quantum prompts
+- ✅ Validating prompt files with helpful error messages
+- 🔗 Running combined validation and generation
+- 📋 Viewing available schemas and examples
+
+#### Direct Commands
+
 ```bash
 # Display help
 python cli/evoprompt.py --help
@@ -33,13 +49,13 @@ python cli/evoprompt.py schemas
 # List example prompts  
 python cli/evoprompt.py examples
 
-# Validate a prompt file
+# Validate a prompt file (with improved error guidance)
 python cli/evoprompt.py validate examples/cold_email_input.json
 
-# Generate quantum prompts
+# Generate quantum prompts (with enhanced visual output)
 python cli/evoprompt.py quantum -n 3
 
-# Quantum entangle validation and generation
+# Quantum entangle validation and generation (with step-by-step feedback)
 python cli/evoprompt.py entangle examples/landing_page_input.json
 ```
 
@@ -50,6 +66,19 @@ python cli/evoprompt.py quantum -n 5
 ```
 
 This generates superposed prompts, entangles them, and collapses to a specific measurement.
+
+### ✨ Enhanced User Experience Features
+
+The CLI now provides a **well-guided app experience** with:
+
+- **🎯 Interactive Guided Mode**: Step-by-step wizards for all common workflows
+- **📱 User-Friendly Interface**: Visual indicators, emojis, and clear progress feedback  
+- **❌ Smart Error Handling**: Helpful tips and actionable guidance for common mistakes
+- **💡 Contextual Help**: Suggestions for next steps and available options
+- **🔄 Progressive Workflow**: Validation errors prevent generation until fixed
+- **📚 Discovery Features**: Easy access to examples and schemas
+
+Perfect for both beginners learning quantum prompt engineering and experts who want efficient workflows!
 
 ## EPP Specifications
 

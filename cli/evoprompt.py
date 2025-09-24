@@ -75,8 +75,14 @@ def log(msg, level="INFO"):
 # Validation command
 def validate(args, ctx=None):
     if not os.path.isfile(args.file):
-        log(f"File not found: {args.file}", "ERROR")
-        sys.exit(1)
+        result = {"file": args.file, "valid": False, "error": f"File not found: {args.file}"}
+        if ctx:
+            ctx.validation_result = result
+        print(Fore.RED + f"❌ Validation result: {result}")
+        log(f"✗ File not found: {args.file}", "ERROR")
+        print(Fore.YELLOW + f"💡 Tip: Check if the file path is correct and the file exists.")
+        print(Fore.CYAN + f"💡 Available examples: Run 'python cli/evoprompt.py examples' to see sample files.")
+        return
     
     log(f"Validating file: {args.file}")
     
@@ -88,13 +94,14 @@ def validate(args, ctx=None):
         result = {"file": args.file, "valid": False, "error": f"Invalid JSON: {e}"}
         if ctx:
             ctx.validation_result = result
-        print(Fore.RED + f"Validation result: {result}")
+        print(Fore.RED + f"❌ Validation result: {result}")
+        print(Fore.YELLOW + f"💡 Tip: Check your JSON syntax. Common issues include missing commas, quotes, or brackets.")
         return
     except IOError as e:
         result = {"file": args.file, "valid": False, "error": f"File error: {e}"}
         if ctx:
             ctx.validation_result = result
-        print(Fore.RED + f"Validation result: {result}")
+        print(Fore.RED + f"❌ Validation result: {result}")
         return
     
     # Determine the domain for schema selection
@@ -103,7 +110,9 @@ def validate(args, ctx=None):
         result = {"file": args.file, "valid": False, "error": "Cannot determine domain from content. Missing metadata.domain field."}
         if ctx:
             ctx.validation_result = result
-        print(Fore.RED + f"Validation result: {result}")
+        print(Fore.RED + f"❌ Validation result: {result}")
+        print(Fore.YELLOW + f"💡 Tip: Add a 'metadata' section with a 'domain' field to your JSON file.")
+        print(Fore.CYAN + f"💡 Supported domains: cold_email, landing_page, competitor_analysis")
         return
     
     # Load the appropriate schema
@@ -112,7 +121,8 @@ def validate(args, ctx=None):
         result = {"file": args.file, "valid": False, "error": f"No schema found for domain: {domain}"}
         if ctx:
             ctx.validation_result = result
-        print(Fore.RED + f"Validation result: {result}")
+        print(Fore.RED + f"❌ Validation result: {result}")
+        print(Fore.YELLOW + f"💡 Available schemas: Run 'python cli/evoprompt.py schemas' to see supported domains.")
         return
     
     # Perform JSON schema validation
@@ -121,31 +131,38 @@ def validate(args, ctx=None):
         result = {"file": args.file, "valid": True, "domain": domain}
         if ctx:
             ctx.validation_result = result
-        print(Fore.GREEN + f"Validation result: {result}")
+        print(Fore.GREEN + f"✅ Validation result: {result}")
         log(f"✓ File {args.file} is valid according to {domain} schema", "INFO")
+        print(Fore.CYAN + f"🎉 Success! Your quantum prompt is properly structured for the {domain} domain.")
     except ValidationError as e:
         result = {"file": args.file, "valid": False, "error": f"Schema validation failed: {e.message}", "domain": domain}
         if ctx:
             ctx.validation_result = result
-        print(Fore.RED + f"Validation result: {result}")
+        print(Fore.RED + f"❌ Validation result: {result}")
         log(f"✗ Validation error at path '{'.'.join(str(p) for p in e.path)}': {e.message}", "ERROR")
+        print(Fore.YELLOW + f"💡 Tip: Check the field '{'.'.join(str(p) for p in e.path)}' in your JSON file.")
+        print(Fore.CYAN + f"💡 Example: Look at examples/{domain}_input.json for proper structure.")
     except SchemaError as e:
         result = {"file": args.file, "valid": False, "error": f"Schema error: {e.message}", "domain": domain}
         if ctx:
             ctx.validation_result = result
-        print(Fore.RED + f"Validation result: {result}")
+        print(Fore.RED + f"❌ Validation result: {result}")
         log(f"✗ Schema error: {e.message}", "ERROR")
 
 # Generation command
 def generate(args, ctx=None):
     if not os.path.isfile(args.input):
-        log(f"Input file not found: {args.input}", "ERROR")
-        sys.exit(1)
+        print(Fore.RED + f"❌ Input file not found: {args.input}")
+        log(f"✗ File not found: {args.input}", "ERROR")
+        print(Fore.YELLOW + f"💡 Tip: Check if the file path is correct and the file exists.")
+        print(Fore.CYAN + f"💡 Available examples: Run 'python cli/evoprompt.py examples' to see sample files.")
+        return
     log(f"Generating output for: {args.input}")
     output = {"input": args.input, "output": "Generated data"}
     if ctx:
         ctx.generated_output = output
-    print(Fore.CYAN + f"Generation result: {output}")
+    print(Fore.CYAN + f"🔄 Generation result: {output}")
+    print(Fore.GREEN + f"✨ Generation completed! Your quantum prompt has been processed.")
 
 # Entangle command: validate then generate
 class Context:
@@ -154,11 +171,25 @@ class Context:
         self.generated_output = None
 
 def entangle(args):
+    print(Fore.MAGENTA + "\n🔗 Quantum Entanglement Process")
+    print(Fore.CYAN + "Performing validation and generation in quantum entangled state...")
+    
     ctx = Context()
+    print(Fore.BLUE + "\n1️⃣  Validation Phase:")
     validate(args, ctx)
-    args.input = args.file
-    generate(args, ctx)
-    print(Fore.MAGENTA + f"Entangled results:\nValidation: {ctx.validation_result}\nGeneration: {ctx.generated_output}")
+    
+    if ctx.validation_result and ctx.validation_result.get('valid'):
+        print(Fore.BLUE + "\n2️⃣  Generation Phase:")
+        args.input = args.file
+        generate(args, ctx)
+        
+        print(Fore.MAGENTA + f"\n🔗 Quantum Entangled Results:")
+        print(Fore.GREEN + f"   Validation: {ctx.validation_result}")
+        print(Fore.CYAN + f"   Generation: {ctx.generated_output}")
+        print(Fore.GREEN + "\n✨ Quantum entanglement process completed successfully!")
+    else:
+        print(Fore.RED + "\n❌ Entanglement failed: Validation phase unsuccessful.")
+        print(Fore.YELLOW + "💡 Fix validation errors before proceeding with generation.")
 
 # List schemas command
 def list_schemas(args):
@@ -187,16 +218,169 @@ def plugin(args):
 # Quantum prompt generation command
 def quantum(args):
     n = args.n if hasattr(args, 'n') else 3
-    print(Fore.BLUE + "\nQuantum Prompt Generation:")
+    print(Fore.BLUE + "\n🔮 Quantum Prompt Generation:")
+    print(Fore.CYAN + f"Generating {n} superposed quantum prompts...")
+    
     superposed = generate_superposed_prompts(n)
-    print(Fore.YELLOW + "Superposed Prompts:")
+    print(Fore.YELLOW + "\n⚛️  Superposed Prompts:")
     print(json.dumps(superposed, indent=2))
+    
     entangled = entangle_prompts(superposed)
-    print(Fore.GREEN + "\nEntangled Prompt:")
+    print(Fore.GREEN + "\n🔗 Entangled Prompt:")
     print(json.dumps(entangled, indent=2))
+    
     collapsed = collapse_prompt(superposed)
-    print(Fore.MAGENTA + "\nCollapsed Prompt (Measurement):")
+    print(Fore.MAGENTA + "\n📏 Collapsed Prompt (Measurement):")
     print(json.dumps(collapsed, indent=2))
+    
+    print(Fore.GREEN + "\n✨ Quantum generation completed!")
+    print(Fore.CYAN + "💡 These quantum prompts demonstrate superposition, entanglement, and wave function collapse.")
+
+# Interactive guided mode
+def guided_mode():
+    """Interactive guided mode for new users."""
+    print(Fore.GREEN + "\n🌟 Welcome to the Evoprompt Protocol Guided Experience!")
+    print(Fore.CYAN + "\nThis interactive mode will help you get started with quantum prompt engineering.")
+    
+    while True:
+        print(Fore.YELLOW + "\n" + "="*60)
+        print(Fore.WHITE + "What would you like to do? Choose an option:")
+        print(Fore.CYAN + "1. 🔮 Generate quantum prompts (quantum)")
+        print(Fore.CYAN + "2. ✅ Validate an existing prompt file (validate)")
+        print(Fore.CYAN + "3. 🔗 Validate and generate combined (entangle)")
+        print(Fore.CYAN + "4. 📋 View available schemas (schemas)")
+        print(Fore.CYAN + "5. 📚 View example files (examples)")
+        print(Fore.CYAN + "6. ❓ Show CLI help")
+        print(Fore.CYAN + "7. 🚪 Exit")
+        
+        try:
+            choice = input(Fore.WHITE + "\nEnter your choice (1-7): ").strip()
+            
+            if choice == "1":
+                guided_quantum_generation()
+            elif choice == "2":
+                guided_validation()
+            elif choice == "3":
+                guided_entanglement()
+            elif choice == "4":
+                print(Fore.GREEN + "\n📋 Available Schemas:")
+                list_schemas(None)
+            elif choice == "5":
+                print(Fore.GREEN + "\n📚 Example Files:")
+                list_examples(None)
+            elif choice == "6":
+                show_detailed_help()
+            elif choice == "7":
+                print(Fore.GREEN + "\n👋 Thank you for using Evoprompt Protocol! Quantum coherence maintained.")
+                break
+            else:
+                print(Fore.RED + "❌ Invalid choice. Please enter a number between 1-7.")
+                
+        except KeyboardInterrupt:
+            print(Fore.GREEN + "\n\n👋 Goodbye! Quantum coherence maintained.")
+            break
+        except EOFError:
+            print(Fore.GREEN + "\n\n👋 Goodbye! Quantum coherence maintained.")
+            break
+
+def guided_quantum_generation():
+    """Guide user through quantum prompt generation."""
+    print(Fore.GREEN + "\n🔮 Quantum Prompt Generation")
+    print(Fore.CYAN + "Generate superposed quantum prompts that exist in multiple states simultaneously.")
+    
+    try:
+        n = input(Fore.WHITE + "\nHow many quantum prompts would you like to generate? (default: 3): ").strip()
+        if not n:
+            n = 3
+        else:
+            n = int(n)
+            if n < 1 or n > 10:
+                print(Fore.YELLOW + "⚠️  Adjusting to safe quantum range (1-10). Using 3.")
+                n = 3
+                
+        print(Fore.BLUE + f"\n🎯 Generating {n} quantum prompts...")
+        
+        # Create a mock args object
+        class Args:
+            def __init__(self, n):
+                self.n = n
+        
+        quantum(Args(n))
+        
+    except ValueError:
+        print(Fore.RED + "❌ Invalid number. Using default value of 3.")
+        quantum(Args(3))
+    except KeyboardInterrupt:
+        print(Fore.YELLOW + "\n⚠️  Quantum generation interrupted.")
+
+def guided_validation():
+    """Guide user through file validation."""
+    print(Fore.GREEN + "\n✅ File Validation")
+    print(Fore.CYAN + "Validate your quantum prompt files against EPP schemas.")
+    
+    # Show available examples first
+    print(Fore.BLUE + "\n📚 Available example files:")
+    list_examples(None)
+    
+    file_path = input(Fore.WHITE + "\nEnter the path to your JSON file (or press Enter to validate an example): ").strip()
+    
+    if not file_path:
+        file_path = "examples/cold_email_input.json"
+        print(Fore.BLUE + f"📁 Using example file: {file_path}")
+    
+    if not os.path.isfile(file_path):
+        print(Fore.RED + f"❌ File not found: {file_path}")
+        return
+        
+    # Create a mock args object
+    class Args:
+        def __init__(self, file):
+            self.file = file
+    
+    print(Fore.BLUE + f"\n🔍 Validating {file_path}...")
+    validate(Args(file_path))
+
+def guided_entanglement():
+    """Guide user through entangled validation and generation."""
+    print(Fore.GREEN + "\n🔗 Quantum Entanglement (Validate + Generate)")
+    print(Fore.CYAN + "Perform quantum entangled validation and generation in one operation.")
+    
+    # Show available examples first
+    print(Fore.BLUE + "\n📚 Available example files:")
+    list_examples(None)
+    
+    file_path = input(Fore.WHITE + "\nEnter the path to your JSON file (or press Enter to use an example): ").strip()
+    
+    if not file_path:
+        file_path = "examples/landing_page_input.json"
+        print(Fore.BLUE + f"📁 Using example file: {file_path}")
+    
+    if not os.path.isfile(file_path):
+        print(Fore.RED + f"❌ File not found: {file_path}")
+        return
+        
+    # Create a mock args object
+    class Args:
+        def __init__(self, file):
+            self.file = file
+    
+    print(Fore.BLUE + f"\n🔗 Entangling {file_path}...")
+    entangle(Args(file_path))
+
+def show_detailed_help():
+    """Show detailed CLI help with examples."""
+    print(Fore.GREEN + "\n❓ Evoprompt Protocol CLI Help")
+    print(Fore.CYAN + "\nCommand Usage Examples:")
+    print(Fore.WHITE + "  python cli/evoprompt.py quantum -n 5")
+    print(Fore.GRAY + "    → Generate 5 quantum prompts")
+    print(Fore.WHITE + "  python cli/evoprompt.py validate examples/cold_email_input.json")
+    print(Fore.GRAY + "    → Validate a prompt file")
+    print(Fore.WHITE + "  python cli/evoprompt.py entangle examples/landing_page_input.json")
+    print(Fore.GRAY + "    → Validate and generate from a prompt file")
+    print(Fore.WHITE + "  python cli/evoprompt.py schemas")
+    print(Fore.GRAY + "    → List available JSON schemas")
+    print(Fore.WHITE + "  python cli/evoprompt.py examples")
+    print(Fore.GRAY + "    → List example prompt files")
 
 # Main CLI entrypoint
 def main():
@@ -235,8 +419,14 @@ def main():
     if hasattr(args, "func"):
         args.func(args)
     else:
-        log("No subcommand provided. Showing help:", "WARN")
-        parser.print_help()
+        # Show help hint before launching guided mode
+        print(Fore.YELLOW + "\n💡 Tip: You can also use specific commands directly:")
+        print(Fore.CYAN + "   python cli/evoprompt.py --help  (for command reference)")
+        print(Fore.CYAN + "   python cli/evoprompt.py quantum  (quick quantum generation)")
+        print(Fore.CYAN + "   python cli/evoprompt.py validate <file>  (validate a file)")
+        print("")
+        # Launch guided mode instead of just showing help
+        guided_mode()
 
 if __name__ == "__main__":
     main()
